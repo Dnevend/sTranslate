@@ -34,23 +34,46 @@ Panel.prototype.Create = function () {
 
     document.body.appendChild(container)
 
-    //把这个container当成一个属性赋值给Panel构造函数,方便后续对这个翻译面板进行其他操作,如替换面板中的内容
+    // 把这个container当成一个属性赋值给Panel构造函数,方便后续对这个翻译面板进行其他操作,如替换面板中的内容
     this.container = container
 
-    //把关闭按钮也赋值到Panel的属性close上
+    // 把关闭按钮也赋值到Panel的属性close上
     this.close = container.querySelector('.close')
-
-    //用来显示需要查询的内容
+    // 用来显示需要查询的内容
     this.source = container.querySelector('.source .content')
-
-    //用来显示翻译后的内容
+    // 用来显示翻译后的内容
     this.dest = container.querySelector('.dest .content')
+
+    // 鼠标是否按下
+    this.isMouseDown = false
+    this.initX = 0
+    this.initY = 0
 }
 
 Panel.prototype.Bind = function () {
     this.close.onclick = () => {
         this.Hide()
     }
+
+    this.container.addEventListener('mousedown', function (e) {
+        this.isMouseDown = true
+        this.initX = e.offsetX
+        this.initY = e.offsetY
+    })
+
+    this.container.addEventListener('mouseup', function () {
+        this.isMouseDown = false
+    })
+
+    this.container.addEventListener('mousemove', function (e) {
+
+        console.log('isMouseDown', this.isMouseDown)
+        if (this.isMouseDown && isEventInTarget(e, '.translate-panel')) {
+            let target = document.querySelector('.translate-panel')
+            target.style.top = (e.pageY - this.initY) + 'px'
+            target.style.left = (e.pageX - this.initX) + 'px'
+        }
+    })
 }
 
 Panel.prototype.translate = function (text) {
@@ -78,21 +101,6 @@ Panel.prototype.pos = function (pos) {
     this.container.style.left = pos.x + 'px'
 }
 
-
-// 获取用户选择内容
-function getUserSelection() {
-
-    let text = "";
-    if (window.getSelection) {
-        text = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-        text = document.selection.createRange().text;
-    }
-
-    // 弹出翻译窗口
-    return text.trim()
-}
-
 let panel = new Panel()
 
 window.onmouseup = function (e) {
@@ -113,14 +121,37 @@ window.onmouseup = function (e) {
 }
 
 window.onclick = function (e) {
-    let target = e.target || e.srcElement
-    let _target = document.querySelector('.translate-panel')
-    // _target.contains(target) 判断点击事件是否发生在_target元素内
+    
 
     let text = getUserSelection()
-    if (!text && !_target.contains(target)) {
+    if (!text && !isEventInTarget(e, '.translate-panel')) {
         panel.Hide()
     }
 }
 
 // TODO:窗口尺寸调整
+
+
+// 防抖函数
+
+// 判断事件是否发生在指定元素内
+function isEventInTarget(e, selector) {
+    let target = e.target || e.srcElement
+    let _target = document.querySelector(selector)
+
+    return _target.contains(target)
+}
+
+// 获取用户选择内容
+function getUserSelection() {
+
+    let text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+
+    // 弹出翻译窗口
+    return text.trim()
+}

@@ -1,35 +1,45 @@
 {
-    "name": "My First Extension",
+    "name": "sTranslate",
     "version": "1.0",
     "manifest_version": 2,
-    "description": "The first extension that I made.",
+    "description": "A simple translate tools.",
+    // 配置页面
+    "options_page": "options.html",
 
-    // 权限
     "permissions": [
-        "storage",
-        "activeTab",
-        "declarativeContent"
+        "storage", // 存储
+        "activeTab", // 
+        "declarativeContent",
+        "contextMenus" // 右键菜单
     ],
+
     "browser_action": {
         "default_popup": "popup.html",
         "default_icon": "icon.png"
     },
 
-    // 命令
-    "commands": {
-        "_execute_browser_action": {
-            "suggested_key": {
-                "default": "Ctrl+Shift+T",
-                "mac": "MacCtrl+Shift+T"
-            },
-            "description": "Opens popup.html"
-        }
-    },
     "background": {
-        // "page": "background.html",
         "scripts": [
             "background.js"
         ],
+        // 后台常驻
         "persistent": true
-    }
+    },
+
+    "content_scripts": [
+        {
+            // 必需。指定此内容脚本将被注入到哪些页面。
+            "matches": [
+                "*://*/*"
+            ],
+            // 注入时机
+            "run_at": "document_idle",
+            "css": [
+                "content.css"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
 }

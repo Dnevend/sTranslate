@@ -1,0 +1,35 @@
+{
+    "name": "My First Extension",
+    "version": "1.0",
+    "manifest_version": 2,
+    "description": "The first extension that I made.",
+
+    // 权限
+    "permissions": [
+        "storage",
+        "activeTab",
+        "declarativeContent"
+    ],
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    },
+
+    // 命令
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+T",
+                "mac": "MacCtrl+Shift+T"
+            },
+            "description": "Opens popup.html"
+        }
+    },
+    "background": {
+        // "page": "background.html",
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    }
+}
